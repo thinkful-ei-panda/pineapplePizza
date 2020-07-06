@@ -61,3 +61,52 @@ app.get('/greetings', (req, res) => {
   //6. send the response
   res.send(greeting);
 });
+
+app.get('/sum', (req, res) => {
+  const a = Number(req.query.a);
+  const b = Number(req.query.b);
+  const sum = `The sum of ${a} and ${b} is ba${a+b}a.`;
+  res.send(sum);
+});
+
+app.get('/cipher', (req, res) => {
+  const text = req.query.text.toUpperCase();
+  const shift = Number(req.query.shift);
+  const string = Array.from(text).map(char => {
+    let code;
+    if (char.charCodeAt(0) + shift > 90) {
+      code = 64 + ((char.charCodeAt(0) + shift) - 90);
+    } else {
+      code = char.charCodeAt(0) + shift;
+    };
+    return code;
+  });
+  res.send((String.fromCharCode(...string)));
+});
+
+app.get('/lotto', (req, res) => {
+  const ticket = req.query.arr;
+  // const num = Array.from(Array(6)).map(index => Math.ceil(Math.random() * 20));
+  // const num = Array.from(Array(6), () => Math.ceil(Math.random() * 20));
+  const win = Array.from(Array(6), () => Math.ceil(Math.random() * 20));
+
+  let results = 0;
+  ticket.forEach(tick => {
+    win.forEach(num => {
+      if (num == Number(tick)) {
+        results++;
+      };
+    });
+  });
+
+  switch(results) {
+    case 4:
+      res.send("Congratulations, you win a free ticket!");
+    case 5:
+      res.send("Congratulations! You win $100!");
+    case 6:
+      res.send("Wow! Unbelievable! You could have won mega millions!");
+    default:
+      res.send("Sorry, you lose!")
+  };
+});
