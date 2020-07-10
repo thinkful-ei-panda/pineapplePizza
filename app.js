@@ -4,12 +4,12 @@ const app = express();
 
 app.use(morgan('dev'));
 
-app.get('/', (req, res) => {
-  res.send('Hello Express!');
-});
-
 app.listen(8000, () => {
   console.log('Express server is listening on port 8000!');
+});
+
+app.get('/', (req, res) => {
+  res.send('Hello Express!');
 });
 
 app.get('/burgers', (req, res) => {
@@ -21,7 +21,7 @@ app.get('/pizza/pepperoni', (req, res) => {
 });
 
 app.get('/pizza/pineapple', (req, res) => {
-  res.send("You're living on the edge!");
+  res.send('Living the dream!');
 });
 
 app.get('/echo', (req, res) => {
@@ -35,37 +35,37 @@ app.get('/echo', (req, res) => {
 });
 
 app.get('/queryViewer', (req, res) => {
-  console.log(req.query);
-  res.send(req.query); //do not send any data back to the client
+  res.send(req.query);
 });
 
 app.get('/greetings', (req, res) => {
-  //1. get values from the request
   const name = req.query.name;
   const race = req.query.race;
 
-  //2. validate the values
   if (!name) {
-    //3. name was not provided
     return res.status(400).send('Please provide a name');
-  }
+  };
 
   if (!race) {
-    //3. race was not provided
     return res.status(400).send('Please provide a race');
-  }
+  };
 
-  //4. and 5. both name and race are valid so do the processing.
   const greeting = `Greetings ${name} the ${race}, welcome to our kingdom.`;
 
-  //6. send the response
   res.send(greeting);
 });
 
 app.get('/sum', (req, res) => {
+  let sum;
   const a = Number(req.query.a);
   const b = Number(req.query.b);
-  const sum = `The sum of ${a} and ${b} is ba${a+b}a.`;
+
+  if (isNaN(a) || isNaN(b)) {
+    sum = `The sum of ${a} and ${b} is ba${a+b}a.`;
+  }
+  
+  sum = `The sum of ${a} and ${b} is ba${a+b}a.`;
+
   res.send(sum);
 });
 
@@ -74,26 +74,28 @@ app.get('/cipher', (req, res) => {
   const shift = Number(req.query.shift);
   const string = Array.from(text).map(char => {
     let code;
+
     if (char.charCodeAt(0) + shift > 90) {
       code = 64 + ((char.charCodeAt(0) + shift) - 90);
     } else {
       code = char.charCodeAt(0) + shift;
     };
+
     return code;
   });
   res.send((String.fromCharCode(...string)));
 });
 
 app.get('/lotto', (req, res) => {
-  const ticket = req.query.arr;
+  const lottoTicket = req.query.arr;
   // const num = Array.from(Array(6)).map(index => Math.ceil(Math.random() * 20));
   // const num = Array.from(Array(6), () => Math.ceil(Math.random() * 20));
-  const win = Array.from(Array(6), () => Math.ceil(Math.random() * 20));
+  const winningNumbers = Array.from(Array(6), () => Math.ceil(Math.random() * 20));
 
   let results = 0;
-  ticket.forEach(tick => {
-    win.forEach(num => {
-      if (num == Number(tick)) {
+  lottoTicket.forEach(ticketNum => {
+    winningNumbers.forEach(winningNum => {
+      if (winningNum == Number(ticketNum)) {
         results++;
       };
     });
@@ -101,12 +103,13 @@ app.get('/lotto', (req, res) => {
 
   switch(results) {
     case 4:
-      res.send("Congratulations, you win a free ticket!");
+      return res.status(200).send("Congratulations, you win a free ticket!");
     case 5:
-      res.send("Congratulations! You win $100!");
+      return res.status(200).send("Congratulations! You win $100!");
     case 6:
-      res.send("Wow! Unbelievable! You could have won mega millions!");
+      return res.status(200).send("Wow! Unbelievable! You could have won mega millions!");
     default:
-      res.send("Sorry, you lose!")
+      return res.status(200).send("Sorry, you lose!");
   };
+
 });
